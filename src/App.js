@@ -60,4 +60,6 @@ const jsx = (
 
 ReactDOM.render(<p>Loading....</p>, document.getElementById('app'));
 
-ReactDOM.render(jsx, document.getElementById('root'));
+store.dispatch(startSetExpenses()).then(() =>{
+  ReactDOM.render(jsx, document.getElementById('app'));
+})
