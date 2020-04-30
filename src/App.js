@@ -1,55 +1,49 @@
 import React from 'react';
 import {
-  BrowserRouter as Router,
+  Router,
   Route,
   Switch
 } from 'react-router-dom';
 import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
-
+import { createBrowserHistory } from 'history'
 import configureStore from './store/configureStore';
 import { startSetExpenses } from './actions/expenses';
-import {setTextFilter} from './actions/filters';
+import {login, logout} from './actions/auth';
 import getVisibleExpenses from './selectors/expenses';
-
+import './style/styles.scss'
 import './App.css';
 import DashBoard from './components/Dashboard';
 import AddExpense from './components/AddExpense';
 import EditExpense from './components/EditExpense';
-import HelpPage from './components/Help';
 import NotFoundPage from './components/NotFoundPage';
-import Header from './Header';
 import './firebase/firebase'
+import Login from './components/Login';
+import {firebase}  from './firebase/firebase';
+import PrivateRoute from './routers/PrivateRoute';
+import PublicRoute from './routers/PublicRoute';
 
+
+export const history = createBrowserHistory()
 
 function App() {
   return (
-    <Router>
+    <Router history={history}>
       <div className="App">
-        <Header />
         <Switch>
-            <Route path="/" component={DashBoard} exact/>
-            <Route path="/create" component={AddExpense}/>
-            <Route path="/edit/:id" component={EditExpense}/>
-            <Route path="/help" component={HelpPage}/>
+            <PublicRoute path="/" component={Login} exact/>
+            <PrivateRoute path="/dashboard" component={DashBoard} exact/>
+            <PrivateRoute path="/create" component={AddExpense}/>
+            <PrivateRoute path="/edit/:id" component={EditExpense}/>
             <Route component = {NotFoundPage} />
             </Switch>
       </div>
     </Router>
-    
   );
 }
 
 
 const store = configureStore();
-
-// export function Jsx(){ 
-//   return (
-//     <Provider store = {store}>
-//       <App />
-//     </Provider>
-//   );
-// }
 
 const jsx = (
   <Provider store={store}>
@@ -57,9 +51,30 @@ const jsx = (
   </Provider>
 );
 
+let hasRendered = false;
+const renderApp = () =>{
+  if(!hasRendered){
+    ReactDOM.render(jsx, document.getElementById('app'));
+    hasRendered = true;
+  }
+}
 
 ReactDOM.render(<p>Loading....</p>, document.getElementById('app'));
 
-store.dispatch(startSetExpenses()).then(() =>{
-  ReactDOM.render(jsx, document.getElementById('app'));
-})
+
+
+firebase.auth().onAuthStateChanged((user) => {
+  if(user){
+    store.dispatch(login(user.uid));
+    store.dispatch(startSetExpenses()).then(() =>{
+      renderApp();
+      if(history.location.pathname === '/'){
+        history.push('/dashboard');
+      }
+  });
+  }else{
+    store.dispatch(logout());
+    renderApp();
+    history.push('/');
+  }
+});
