@@ -14,7 +14,7 @@ export const Login = ({startLogin}) => (
             <div className="google-icon-wrapper">
                 <img className="google-icon" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
             </div>
-            <p className="btn-text"><b className="button" onClick={startLogin}>Sign in with google</b></p>
+            <p className="btn-text"><b onClick={startLogin}>Sign in with google</b></p>
         </div>
         </div>
     </div>

@@ -11,12 +11,13 @@ import configureStore from './store/configureStore';
 import { startSetExpenses } from './actions/expenses';
 import {login, logout} from './actions/auth';
 import getVisibleExpenses from './selectors/expenses';
-import './style/styles.scss'
+import './style/styles.scss';
 import './App.css';
 import DashBoard from './components/Dashboard';
 import AddExpense from './components/AddExpense';
 import EditExpense from './components/EditExpense';
 import NotFoundPage from './components/NotFoundPage';
+import LoadingPage from'./components/LoadingPage';
 import './firebase/firebase'
 import Login from './components/Login';
 import {firebase}  from './firebase/firebase';
@@ -59,7 +60,7 @@ const renderApp = () =>{
   }
 }
 
-ReactDOM.render(<p>Loading....</p>, document.getElementById('app'));
+ReactDOM.render(<LoadingPage />, document.getElementById('app'));
 
 
 
